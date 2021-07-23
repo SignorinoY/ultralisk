@@ -104,7 +104,7 @@ simulation_lasso <- foreach(
   )
   dml_iv_type$fit()
   theta_iv_type <- dml_iv_type$coef
-  
+
   # Double Machine Learning Method by Partialling Out
   dml_partialling_out <- DoubleMLPLR$new(
     df_dml, ml_g, ml_m,
@@ -114,14 +114,22 @@ simulation_lasso <- foreach(
   theta_partialling_out <- dml_partialling_out$coef
 
   # Return Results
-  c(iter, theta_ols, theta_nonorth, theta_orth_full, theta_orth_split, theta_iv_type, theta_partialling_out)
+  c(
+    iter,
+    theta_ols,
+    theta_nonorth,
+    theta_orth_full,
+    theta_orth_split,
+    theta_iv_type,
+    theta_partialling_out
+  )
 }
 stopCluster(cl)
 
 colnames(simulation_lasso) <- experiments_names
 write.csv(
   simulation_lasso,
-  file = "simulation_lasso.csv",
+  file = "../data/intuition_plr_lasso.csv",
   row.names = FALSE
 )
 
@@ -225,15 +233,23 @@ simulation_rf <- foreach(
   )
   dml_partialling_out$fit()
   theta_partialling_out <- dml_partialling_out$coef
-  
+
   # Return Results
-  c(iter, theta_ols, theta_nonorth, theta_orth_full, theta_orth_split, theta_iv_type, theta_partialling_out)
+  c(
+    iter,
+    theta_ols,
+    theta_nonorth,
+    theta_orth_full,
+    theta_orth_split,
+    theta_iv_type,
+    theta_partialling_out
+  )
 }
 stopCluster(cl)
 
 colnames(simulation_rf) <- experiments_names
 write.csv(
   simulation_rf,
-  file = "simulation_rf.csv",
+  file = "../data/intuition_plr_rf.csv",
   row.names = FALSE
 )
