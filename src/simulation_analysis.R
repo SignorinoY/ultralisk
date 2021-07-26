@@ -196,7 +196,74 @@ ggplot(
     )
 
 ggsave(
+    "./reports/figures/simulation-linear-3.pdf",
+    width = 5, height = 5
+)
+
+# Type of Models
+
+## Linear Model
+
+simulation_linear <- read.csv("./data/simulation_linear_3.csv")
+simulation_linear$seed <- 1:1000
+
+simulation_temp <- simulation_linear %>%
+    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
+
+ggplot(
+    data = simulation_temp,
+    aes(x = theta, fill = Methods, color = Methods)
+) +
+    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
+    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
+    scale_color_viridis_d(
+        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
+    ) +
+    scale_fill_viridis_d(
+        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
+    ) +
+    ylim(c(0, 127)) +
+    labs(x = TeX("$\\theta$"), y = "Count") +
+    theme_minimal() +
+    theme(
+        legend.position = "top",
+        legend.margin = margin(0, 0, -10, 0)
+    )
+
+ggsave(
     "./reports/figures/simulation-linear.pdf",
     width = 5, height = 5
 )
-# Polynomial Models
+
+## Polynomial Model
+
+simulation_polynomial <- read.csv("./data/simulation_polynomial.csv")
+simulation_polynomial$seed <- 1:1000
+
+simulation_temp <- simulation_polynomial %>%
+    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
+
+ggplot(
+    data = simulation_temp,
+    aes(x = theta, fill = Methods, color = Methods)
+) +
+    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
+    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
+    scale_color_viridis_d(
+        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
+    ) +
+    scale_fill_viridis_d(
+        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
+    ) +
+    ylim(c(0, 127)) +
+    labs(x = TeX("$\\theta$"), y = "Count") +
+    theme_minimal() +
+    theme(
+        legend.position = "top",
+        legend.margin = margin(0, 0, -10, 0)
+    )
+
+ggsave(
+    "./reports/figures/simulation-polynomial.pdf",
+    width = 5, height = 5
+)
