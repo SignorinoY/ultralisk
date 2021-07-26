@@ -27,7 +27,7 @@ ggplot(
     scale_fill_viridis_d(
         labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
     ) +
-    ylim(c(0, 150)) +
+    ylim(c(0, 190)) +
     labs(x = TeX("$\\theta$"), y = "Count") +
     theme_minimal() +
     theme(
@@ -59,7 +59,7 @@ ggplot(
     scale_fill_viridis_d(
         labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
     ) +
-    ylim(c(0, 150)) +
+    ylim(c(0, 190)) +
     labs(x = TeX("$\\theta$"), y = "Count") +
     theme_minimal() +
     theme(
@@ -91,7 +91,7 @@ ggplot(
     scale_fill_viridis_d(
         labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
     ) +
-    ylim(c(0, 150)) +
+    ylim(c(0, 190)) +
     labs(x = TeX("$\\theta$"), y = "Count") +
     theme_minimal() +
     theme(
@@ -123,7 +123,7 @@ ggplot(
     scale_fill_viridis_d(
         labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
     ) +
-    ylim(c(0, 150)) +
+    ylim(c(0, 190)) +
     labs(x = TeX("$\\theta$"), y = "Count") +
     theme_minimal() +
     theme(
@@ -155,7 +155,7 @@ ggplot(
     scale_fill_viridis_d(
         labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
     ) +
-    ylim(c(0, 150)) +
+    ylim(c(0, 190)) +
     labs(x = TeX("$\\theta$"), y = "Count") +
     theme_minimal() +
     theme(
@@ -187,7 +187,7 @@ ggplot(
     scale_fill_viridis_d(
         labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
     ) +
-    ylim(c(0, 150)) +
+    ylim(c(0, 190)) +
     labs(x = TeX("$\\theta$"), y = "Count") +
     theme_minimal() +
     theme(
