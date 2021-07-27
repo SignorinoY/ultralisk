@@ -11,50 +11,52 @@ library("doSNOW")
 
 source("./src/dml_plr_lasso_rf.R")
 
-cores <- 64
+cores <- 100
 iters <- 1000
 
-# Data Generation
-
-n <- 1000
-p <- 3
-mu <- rep(0, p)
-sigma <- diag(p)
+n <- 200
 
 theta <- 1
-
-data <- list()
-for (iter in 1:iters) {
-    set.seed(iter)
-    x <- mvrnorm(n, mu = mu, Sigma = sigma)
-    d <- x[, 1]^3 + x[, 2]^2 + x[, 1] * x[, 2] + x[, 2] * x[, 3] + rnorm(n)
-    y <- theta * d + x[, 2]^3 + x[, 3]^2 + x[, 1] * x[, 3] + x[, 2] * x[, 3] + rnorm(n)
-    data[[iter]] <- data.frame(X = x, d = d, y = y)
-}
-
-# Parallelization Estimation
 
 cl <- makeCluster(cores)
 registerDoSNOW(cl)
 pb <- txtProgressBar(max = iters, style = 3)
 progress <- function(n) setTxtProgressBar(pb, n)
-opts <- list(progress = progress)
 
-simulation_result <- foreach(
-    iter = 1:iters,
-    .combine = rbind,
-    .options.snow = opts,
-    .packages = c("mlr3", "mlr3learners", "DoubleML", "mlr3tuning")
-) %dopar% {
-    df <- data[[iter]]
-    theta_hat <- dml_plr_lasso_rf(df)
+for (p in c(3, 5, 10, 20, 50, 100, 150)) {
+    mu <- rep(0, p)
+    sigma <- diag(p)
+
+    # Data Generation
+    data <- list()
+    for (iter in 1:iters) {
+        set.seed(iter)
+        x <- mvrnorm(n, mu = mu, Sigma = sigma)
+        d <- x[, 1]^3 + x[, 2]^2 + x[, 1] * x[, 2] +
+            x[, 2] * x[, 3] + rnorm(n)
+        y <- theta * d + x[, 2]^3 + x[, 3]^2 + x[, 1] * x[, 3] +
+            x[, 2] * x[, 3] + rnorm(n)
+        data[[iter]] <- data.frame(X = x, d = d, y = y)
+    }
+
+    # Parallelization Estimation
+    opts <- list(progress = progress)
+    simulation_result <- foreach(
+        iter = 1:iters,
+        .combine = rbind,
+        .options.snow = opts,
+        .packages = c("mlr3", "mlr3learners", "DoubleML", "mlr3tuning")
+    ) %dopar% {
+        df <- data[[iter]]
+        theta_hat <- dml_plr_lasso_rf(df)
+    }
+
+    colnames(simulation_result) <- c("OLS", "DML.LASSO", "DML.RF")
+    write.csv(
+        simulation_result,
+        file = paste("./data/simulation_polynomial_", p, ".csv", sep = ""),
+        row.names = FALSE
+    )
 }
 
 stopCluster(cl)
-
-colnames(simulation_result) <- c("OLS", "DML.LASSO", "DML.RF")
-write.csv(
-    simulation_result,
-    file = "./data/simulation_polynomial.csv",
-    row.names = FALSE
-)
