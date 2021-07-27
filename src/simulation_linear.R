@@ -14,13 +14,18 @@ source("./src/dml_plr_lasso_rf.R")
 cores <- 100
 iters <- 1000
 
-n <- 1000
+n <- 200
 
 theta <- 1
 gamma <- c(1, 1, 1)
 beta <- c(1, 1, 1)
 
-for (p in c(3, 10, 20, 50, 100, 200)) {
+cl <- makeCluster(cores)
+registerDoSNOW(cl)
+pb <- txtProgressBar(max = iters, style = 3)
+progress <- function(n) setTxtProgressBar(pb, n)
+
+for (p in c(3, 5, 10, 20, 50, 100, 150)) {
     mu <- rep(0, p)
     sigma <- diag(p)
 
@@ -35,13 +40,7 @@ for (p in c(3, 10, 20, 50, 100, 200)) {
     }
 
     # Parallelization Estimation
-
-    cl <- makeCluster(cores)
-    registerDoSNOW(cl)
-    pb <- txtProgressBar(max = iters, style = 3)
-    progress <- function(n) setTxtProgressBar(pb, n)
     opts <- list(progress = progress)
-
     simulation_result <- foreach(
         iter = 1:iters,
         .combine = rbind,
@@ -52,8 +51,6 @@ for (p in c(3, 10, 20, 50, 100, 200)) {
         theta_hat <- dml_plr_lasso_rf(df)
     }
 
-    stopCluster(cl)
-
     colnames(simulation_result) <- c("OLS", "DML.LASSO", "DML.RF")
     write.csv(
         simulation_result,
@@ -61,3 +58,5 @@ for (p in c(3, 10, 20, 50, 100, 200)) {
         row.names = FALSE
     )
 }
+
+stopCluster(cl)
