@@ -32,9 +32,8 @@ for (p in c(3, 5, 10, 20, 50, 100, 150)) {
         set.seed(iter)
         x <- mvrnorm(n, mu = mu, Sigma = sigma)
         d <- plogis(x[, 1] + x[, 2]) + x[, 3] + rnorm(n)
-        y <- theta * d + x[, 1] + x[, 2] + plogis(x[, 3]) + rnorm(n)
-        data[[iter]] <- data.
-        frame(X = x, d = d, y = y)
+        y <- theta * d + x[, 1] + plogis(x[, 2] + x[, 3]) + rnorm(n)
+        data[[iter]] <- data.frame(X = x, d = d, y = y)
     }
     # Parallelization Estimation
     opts <- list(progress = progress)
