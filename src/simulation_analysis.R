@@ -1,5 +1,6 @@
 library("dplyr")
 library("tidyr")
+library("glue")
 
 library("ggplot2")
 library("viridis")
@@ -7,261 +8,44 @@ library("latex2exp")
 
 theta <- 1
 
-# Linear Models
+models <- c(
+  "linear3", "linear6",
+  "relu3", "relu6",
+  "polynomial3", "polynomial6",
+  "logistic3", "logistic6",
+  "indicator3", "indicator6"
+)
+scores <- c("IV-type", "partialling out")
 
-simulation_linear_200 <- read.csv("./data/simulation_linear_200.csv")
-simulation_linear_200$seed <- 1:1000
-
-simulation_temp <- simulation_linear_200 %>%
-    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
-
-ggplot(
-    data = simulation_temp,
-    aes(x = theta, fill = Methods, color = Methods)
-) +
-    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
-    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
-    scale_color_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
+for (model in models) {
+  for (score in scores) {
+    simulation_result <- read.csv(
+      glue("./data/simulation-{model} ({score}).csv")
+    )
+    simulation_result <- simulation_result %>%
+      gather(key = methods, value = theta, c(ols.d, dml.lasso.d, dml.rf.d))
+    ggplot(
+      data = simulation_result,
+      mapping = aes(x = theta, fill = methods, color = methods)
     ) +
-    scale_fill_viridis_d(
+      geom_histogram(bins = 50, position = "identity", alpha = 0.3) +
+      geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
+      facet_wrap(. ~ p, ncol = 3) +
+      scale_color_viridis_d(
         labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    xlim(c(0.7, 1.75)) + ylim(c(0, 190)) +
-    labs(x = TeX("$\\theta$"), y = "Count") +
-    theme_minimal() +
-    theme(
+      ) +
+      scale_fill_viridis_d(
+        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
+      ) +
+      labs(x = TeX("$\\theta$"), y = "Count") +
+      theme_minimal() +
+      theme(
         legend.position = "top",
         legend.margin = margin(0, 0, -10, 0)
+      )
+    ggsave(
+      glue("./reports/figures/simulation-{model} ({score}).pdf"),
+      width = 8, height = 6
     )
-
-ggsave(
-    "./reports/figures/simulation-linear-200.pdf",
-    width = 5, height = 5
-)
-
-
-simulation_linear_100 <- read.csv("./data/simulation_linear_100.csv")
-simulation_linear_100$seed <- 1:1000
-
-simulation_temp <- simulation_linear_100 %>%
-    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
-
-ggplot(
-    data = simulation_temp,
-    aes(x = theta, fill = Methods, color = Methods)
-) +
-    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
-    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
-    scale_color_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    scale_fill_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    xlim(c(0.7, 1.75)) + ylim(c(0, 190)) +
-    labs(x = TeX("$\\theta$"), y = "Count") +
-    theme_minimal() +
-    theme(
-        legend.position = "top",
-        legend.margin = margin(0, 0, -10, 0)
-    )
-
-ggsave(
-    "./reports/figures/simulation-linear-100.pdf",
-    width = 5, height = 5
-)
-
-
-simulation_linear_50 <- read.csv("./data/simulation_linear_50.csv")
-simulation_linear_50$seed <- 1:1000
-
-simulation_temp <- simulation_linear_50 %>%
-    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
-
-ggplot(
-    data = simulation_temp,
-    aes(x = theta, fill = Methods, color = Methods)
-) +
-    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
-    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
-    scale_color_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    scale_fill_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    xlim(c(0.7, 1.75)) + ylim(c(0, 190)) +
-    labs(x = TeX("$\\theta$"), y = "Count") +
-    theme_minimal() +
-    theme(
-        legend.position = "top",
-        legend.margin = margin(0, 0, -10, 0)
-    )
-
-ggsave(
-    "./reports/figures/simulation-linear-50.pdf",
-    width = 5, height = 5
-)
-
-
-simulation_linear_20 <- read.csv("./data/simulation_linear_20.csv")
-simulation_linear_20$seed <- 1:1000
-
-simulation_temp <- simulation_linear_20 %>%
-    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
-
-ggplot(
-    data = simulation_temp,
-    aes(x = theta, fill = Methods, color = Methods)
-) +
-    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
-    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
-    scale_color_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    scale_fill_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    xlim(c(0.7, 1.75)) + ylim(c(0, 190)) +
-    labs(x = TeX("$\\theta$"), y = "Count") +
-    theme_minimal() +
-    theme(
-        legend.position = "top",
-        legend.margin = margin(0, 0, -10, 0)
-    )
-
-ggsave(
-    "./reports/figures/simulation-linear-20.pdf",
-    width = 5, height = 5
-)
-
-
-simulation_linear_10 <- read.csv("./data/simulation_linear_10.csv")
-simulation_linear_10$seed <- 1:1000
-
-simulation_temp <- simulation_linear_10 %>%
-    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
-
-ggplot(
-    data = simulation_temp,
-    aes(x = theta, fill = Methods, color = Methods)
-) +
-    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
-    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
-    scale_color_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    scale_fill_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    xlim(c(0.7, 1.75)) + ylim(c(0, 190)) +
-    labs(x = TeX("$\\theta$"), y = "Count") +
-    theme_minimal() +
-    theme(
-        legend.position = "top",
-        legend.margin = margin(0, 0, -10, 0)
-    )
-
-ggsave(
-    "./reports/figures/simulation-linear-10.pdf",
-    width = 5, height = 5
-)
-
-
-simulation_linear_3 <- read.csv("./data/simulation_linear_3.csv")
-simulation_linear_3$seed <- 1:1000
-
-simulation_temp <- simulation_linear_3 %>%
-    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
-
-ggplot(
-    data = simulation_temp,
-    aes(x = theta, fill = Methods, color = Methods)
-) +
-    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
-    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
-    scale_color_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    scale_fill_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    xlim(c(0.7, 1.75)) + ylim(c(0, 190)) +
-    labs(x = TeX("$\\theta$"), y = "Count") +
-    theme_minimal() +
-    theme(
-        legend.position = "top",
-        legend.margin = margin(0, 0, -10, 0)
-    )
-
-ggsave(
-    "./reports/figures/simulation-linear-3.pdf",
-    width = 5, height = 5
-)
-
-# Type of Models
-
-## Linear Model
-
-simulation_linear <- read.csv("./data/simulation_linear_3.csv")
-simulation_linear$seed <- 1:1000
-
-simulation_temp <- simulation_linear %>%
-    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
-
-ggplot(
-    data = simulation_temp,
-    aes(x = theta, fill = Methods, color = Methods)
-) +
-    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
-    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
-    scale_color_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    scale_fill_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    labs(x = TeX("$\\theta$"), y = "Count") +
-    theme_minimal() +
-    theme(
-        legend.position = "top",
-        legend.margin = margin(0, 0, -10, 0)
-    )
-
-ggsave(
-    "./reports/figures/simulation-linear.pdf",
-    width = 5, height = 5
-)
-
-## Polynomial Model
-
-simulation_polynomial <- read.csv("./data/simulation_polynomial.csv")
-simulation_polynomial$seed <- 1:1000
-
-simulation_temp <- simulation_polynomial %>%
-    gather(key = Methods, value = theta, c(OLS, DML.LASSO, DML.RF))
-
-ggplot(
-    data = simulation_temp,
-    aes(x = theta, fill = Methods, color = Methods)
-) +
-    geom_histogram(position = "identity", binwidth = 0.01, alpha = 0.3) +
-    geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
-    scale_color_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    scale_fill_viridis_d(
-        labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
-    ) +
-    labs(x = TeX("$\\theta$"), y = "Count") +
-    theme_minimal() +
-    theme(
-        legend.position = "top",
-        legend.margin = margin(0, 0, -10, 0)
-    )
-
-ggsave(
-    "./reports/figures/simulation-polynomial.pdf",
-    width = 5, height = 5
-)
+  }
+}
