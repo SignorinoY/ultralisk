@@ -9,11 +9,7 @@ library("latex2exp")
 theta <- 1
 
 models <- c(
-  "linear3", "linear6",
-  "relu3", "relu6",
-  "polynomial3", "polynomial6",
-  "logistic3", "logistic6",
-  "indicator3", "indicator6"
+  "polynomial6", "indicator6"
 )
 scores <- c("IV-type", "partialling out")
 
