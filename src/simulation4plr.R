@@ -42,12 +42,10 @@ simulation4plr <- function(n = 1000, p = 10, model = "linear3",
   } else if (model == "polynomial3") {
     d <- X[, 1]^3 + X[, 2]^2 + X[, 1] * X[, 2] + X[, 2] * X[, 3] + rnorm(n)
     y <- theta * d + X[, 2]^3 + X[, 3]^2 + X[, 1] * X[, 3] +
-     X[, 2] * X[, 3] + rnorm(n)
+      X[, 2] * X[, 3] + rnorm(n)
   } else if (model == "polynomial6") {
-    d <- X[, 1]^3 + X[, 3]^2 + X[, 6] + X[, 1] * X[, 2] +
-      X[, 4] * X[, 5] + X[, 2] * X[, 3] * X[, 4] + rnorm(n)
-    y <- theta * d + X[, 1] + X[, 2]^2 + X[, 3]^3 + X[, 2] * X[, 3] +
-      X[, 5] * X[, 6] + X[, 2] * X[, 3] * X[, 4] + rnorm(n)
+    d <- rowSums(X[, 1:3])^3 + rowSums(X[, 4:6])^2 + rnorm(n)
+    y <- theta * d + rowSums(X[, 1:3])^2 + rowSums(X[, 4:6])^3 + rnorm(n)
   } else if (model == "logistic3") {
     d <- plogis(X[, 1] + X[, 2]) + 0.25 * X[, 3] + rnorm(n)
     y <- theta * d + X[, 1] + 0.25 * plogis(X[, 2] + X[, 3]) + rnorm(n)
@@ -62,9 +60,11 @@ simulation4plr <- function(n = 1000, p = 10, model = "linear3",
       rnorm(n)
   } else if (model == "indicator6") {
     d <- 1 * (X[, 1] > 3) + 1 * (X[, 2] > 2) + 1 * (X[, 3] > 1) +
-      1 * (X[, 4] > -1) + 1 * (X[, 5] > -2) + 1 * (X[, 6] > -3) + rnorm(n)
+      1 * (X[, 4] > -1) + 1 * (X[, 5] > -2) + 1 * (X[, 6] > -3) +
+      1 * (X[, 1] * X[, 6] > 0) + 1 * (X[, 3] * X[, 4] > 1) + rnorm(n)
     y <- theta * d + 1 * (X[, 1] > 1) + 1 * (X[, 2] > 2) + 1 * (X[, 3] > 3) +
-      1 * (X[, 4] > -3) + 1 * (X[, 5] > -2) + 1 * (X[, 6] > -1) + rnorm(n)
+      1 * (X[, 4] > -3) + 1 * (X[, 5] > -2) + 1 * (X[, 6] > -1) +
+      1 * (X[, 1] * X[, 6] > 2) + 1 * (X[, 3] * X[, 4] > -1) + rnorm(n)
   }
 
   df <- data.frame(X = X, d = d, y = y)
@@ -109,11 +109,7 @@ n <- 200
 theta <- 1
 
 models <- c(
-  "linear3", "linear6",
-  "relu3", "relu6",
-  "polynomial3", "polynomial6",
-  "logistic3", "logistic6",
-  "indicator3", "indicator6"
+  "polynomial6", "indicator6"
 )
 scores <- c("IV-type", "partialling out")
 dims <- c(10, 20, 30, 50, 100, 150)
