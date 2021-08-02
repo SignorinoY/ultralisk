@@ -9,7 +9,11 @@ library("latex2exp")
 theta <- 1
 
 models <- c(
-  "polynomial6", "indicator6"
+  "linear3", "linear6",
+  "relu3", "relu6",
+  "polynomial3", "polynomial6",
+  "logistic3", "logistic6",
+  "indicator3", "indicator6"
 )
 scores <- c("IV-type", "partialling out")
 
@@ -26,7 +30,7 @@ for (model in models) {
     ) +
       geom_histogram(bins = 50, position = "identity", alpha = 0.3) +
       geom_vline(xintercept = theta, linetype = "dotdash", color = "red") +
-      facet_wrap(. ~ p, ncol = 3) +
+      facet_wrap(. ~ p, ncol = 3, labeller = label_both) +
       scale_color_viridis_d(
         labels = c("DoubleML (LASSO)", "DoubleML (RF)", "OLS")
       ) +
